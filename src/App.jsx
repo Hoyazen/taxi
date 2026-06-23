@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { calculateFare, Zone } from './taxiFareCalculator';
 import './App.css';
 
+// const ZONES = [
+//   { value: Zone.URBAINE, label: 'Zone urbaine' },
+//   { value: Zone.SUBURBAINE, label: 'Zone suburbaine' },
+//   { value: Zone.HORS_ZONE, label: 'Hors zone suburbaine' },
+// ];
+
 export default function App() {
-  /**
-   * Etat qui contiendra le contenu du formulaire
-   */
   const [form, setForm] = useState({
     date: '',
     time: '',
@@ -14,18 +17,20 @@ export default function App() {
     estFerie: false,
   });
 
-  /**
-   * Le résultat du calcul du prix
-   */
-  const [result, setResult] = useState(null);
+  // Déclaration des différentes références pour récupération des informations du formulaire
+  const dateRef = useRef(null);
+  const ferieRef = useRef(null);
+  const timeRef = useRef(null);
+  const distanceRef = useRef(null);
+  const zoneUrbaineRef = useRef(null);
+  const zoneSuburbaineRef = useRef(null);
+  const horsZoneRef = useRef(null);
 
-  /**
-   * Erreur éventuelle
-   */
+  const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
   /**
-   * Sur changement 
+   * Sur h
    * @param {*} e 
    */
   function handleChange(e) {
@@ -49,16 +54,18 @@ export default function App() {
       return;
     }
 
-    // const dateObj = new Date(form.date);
-    // const jourSemaine = dateObj.getDay();
-    // const hour = parseInt(form.time.split(':')[0], 10);
-    const distance = -1;
+    const dateObj = new Date(form.date);
+    const jourSemaine = dateObj.getDay();
+    const hour = parseInt(form.time.split(':')[0], 10);
+    const distance = parseFloat(form.distance);
 
     if (isNaN(distance) || distance < 0) {
       setError('La distance doit être un nombre positif.');
       return;
     }
 
+    const fare = calculateFare(jourSemaine, hour, form.zone, distance, form.estFerie);
+    setResult(Math.round(fare * 100) / 100);
   }
 
   return (
@@ -77,6 +84,7 @@ export default function App() {
         <div>
           <label htmlFor="date">Date :</label>
           <input
+            ref={dateRef}
             type="date"
             id="date"
             name="date"
@@ -86,6 +94,7 @@ export default function App() {
           />
           <div className="checkbox">
             <input
+              ref={ferieRef}
               type="checkbox"
               id="estFerie"
               name="estFerie"
@@ -99,6 +108,7 @@ export default function App() {
         <div>
           <label htmlFor="time">Heure :</label>
           <input
+            ref={timeRef}
             type="time"
             id="time"
             name="time"
@@ -113,6 +123,7 @@ export default function App() {
           <div className="radio-group">
             <label>
               <input
+                ref={zoneUrbaineRef}
                 type="radio"
                 name="zone"
                 value="URBAINE"
@@ -123,6 +134,7 @@ export default function App() {
             </label>
             <label>
               <input
+                ref={zoneSuburbaineRef}
                 type="radio"
                 name="zone"
                 value="SUBURBAINE"
@@ -133,6 +145,7 @@ export default function App() {
             </label>
             <label >
               <input
+                ref={horsZoneRef}
                 type="radio"
                 name="zone"
                 value="HORS_ZONE"
@@ -148,6 +161,7 @@ export default function App() {
 
           <label htmlFor="distance">Distance (en km) :</label>
           <input
+            ref={distanceRef}
             type="number"
             id="distance"
             name="distance"
@@ -165,7 +179,7 @@ export default function App() {
       {error && <div className="error">{error}</div>}
 
       {result !== null && (
-        <div id="result">Estimation : {10000000} €</div>
+        <div id="result">Estimation : {result.toFixed(2)} €</div>
       )}
     </div>
   );

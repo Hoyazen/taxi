@@ -20,8 +20,8 @@ describe('TaxiFareCalculator', () => {
 
     it('Tarif B : Lundi-Samedi, 17h00-10h00 (nuit)', () => {
       // Mardi (2), 18h → TARIF_B
-      const result = calculateFare(2, 18, Zone.URBAINE, 10.5, false);7
-      
+      const result = calculateFare(2, 18, Zone.URBAINE, 10.5, false); 7
+
       expect(result).toBeCloseTo(16.46);
     });
 
@@ -131,6 +131,33 @@ describe('TaxiFareCalculator', () => {
    * 
    * Attention, le jeu de test doit comporter des heures et des distances variées afin que le jeu de test soit complet.
    */
+  describe('Hors zone', () => {
+
+    it('Tarif C : toute heure, tous jours', () => {
+      // Lundi (1), 12h → TARIF_C
+      const result = calculateFare(1, 12, Zone.HORS_ZONE, 10.5, false);
+
+      expect(result).toBeCloseTo(19.19);
+    });
+
+    it('Tarif C : dimanche nuit', () => {
+      const result = calculateFare(0, 3, Zone.HORS_ZONE, 10.5, false);
+
+      expect(result).toBeCloseTo(19.19);
+    });
+
+    it('Tarif C : vendredi midi', () => {
+      const result = calculateFare(5, 12, Zone.HORS_ZONE, 10.5, false);
+
+      expect(result).toBeCloseTo(19.19)
+    });
+
+    it('Tarif C : jour férié', () => {
+      const result = calculateFare(3, 14, Zone.HORS_ZONE, 10.5, true);
+
+      expect(result).toBeCloseTo(19.19)
+    });
+  });
 
   /**
    * Test en prenant en compte la prise en charge
@@ -144,9 +171,9 @@ describe('TaxiFareCalculator', () => {
     });
 
     it('La prise en charge est appliquée quelle que soit la zone', () => {
-      const resultUrbaine = calculateFare(1, 12, Zone.URBAINE,    0, false);
+      const resultUrbaine = calculateFare(1, 12, Zone.URBAINE, 0, false);
       const resultSuburbaine = calculateFare(1, 12, Zone.SUBURBAINE, 0, false);
-      const resultHorsZone = calculateFare(1, 12, Zone.HORS_ZONE,  0, false);
+      const resultHorsZone = calculateFare(1, 12, Zone.HORS_ZONE, 0, false);
 
       expect(resultUrbaine).toBeCloseTo(2.6)
       expect(resultSuburbaine).toBeCloseTo(2.6)
@@ -186,7 +213,7 @@ describe('TaxiFareCalculator', () => {
 
 
 const foo = 'bar';
-const beverages = { tea: [ 'chai', 'matcha', 'oolong' ] };
+const beverages = { tea: ['chai', 'matcha', 'oolong'] };
 
 expect(foo).to.be.a('string');
 
@@ -195,5 +222,4 @@ expect(foo).to.equal('bar');
 expect(foo).to.have.lengthOf(3);
 
 expect(beverages).to.have.property('tea').with.lengthOf(3);
-
 
