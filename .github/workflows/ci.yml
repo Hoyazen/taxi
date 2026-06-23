@@ -3,10 +3,10 @@ name: CI — React CSR
 on:
   push:
     branches:
-      - solution
+      - main
   pull_request:
     branches:
-      - solution
+      - main
   workflow_dispatch:
 
 concurrency:
